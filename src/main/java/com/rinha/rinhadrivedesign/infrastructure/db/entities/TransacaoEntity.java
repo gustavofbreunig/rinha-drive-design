@@ -4,8 +4,6 @@ import java.util.Date;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.rinha.rinhadrivedesign.domain.context.Cliente;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +24,12 @@ public class TransacaoEntity {
     private int valor;
     private String tipo; //TODO: trocar para enum
     private String descricao;
-    private Date realizada_em;
+
+    @Column(name = "realizada_em")
+    private Date realizadaEm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClienteEntity cliente;
 
     public TransacaoEntity(int id) {
         this.id = id;

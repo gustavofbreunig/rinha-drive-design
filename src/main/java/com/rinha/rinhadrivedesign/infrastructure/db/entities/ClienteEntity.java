@@ -24,9 +24,6 @@ public class ClienteEntity {
 
     private int limite;
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
-    private List<TransacaoEntity> transacoes;
-
     public ClienteEntity(int id) {
         this.id = id;
     }

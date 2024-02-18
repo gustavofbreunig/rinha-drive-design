@@ -33,7 +33,9 @@ public class ExtratoServiceImpl implements ExtratoService  {
 
     @Override
     public ExtratoResponse obtemExtrato(int ClienteId) throws NotFoundException {
-        ClienteEntity clienteEntity = clienteRepository.findById(ClienteId).orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
+
+        ClienteEntity clienteEntity = clienteRepository.findById(ClienteId)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
         List<TransacaoEntity> transacoesEntity = 
                 transacaoRepository.findFirst10ByClienteOrderByRealizadaEmDesc(clienteEntity);

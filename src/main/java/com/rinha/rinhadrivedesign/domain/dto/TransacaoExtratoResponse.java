@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record TransacaoResponse(
+public record TransacaoExtratoResponse(
     int valor, 
     String tipo, 
     String descricao, 

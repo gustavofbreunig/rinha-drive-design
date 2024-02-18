@@ -12,7 +12,7 @@ import lombok.*;
 public class ExtratoResponse {
 
     private SaldoResponse saldo;
-    private List<TransacaoResponse> ultimas_transacoes;
+    private List<TransacaoExtratoResponse> ultimas_transacoes;
 
 }
 

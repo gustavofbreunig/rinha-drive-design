@@ -15,9 +15,14 @@ public class ClienteController {
     private final ExtratoService extratoService;
 
     @GetMapping(value="/clientes/{ClienteId}/extrato")
-    public ExtratoResponse extrato(@PathVariable Integer ClienteId) throws NotFoundException {        
+    public ExtratoResponse extrato(@PathVariable Integer ClienteId) throws NotFoundException{        
         ExtratoResponse response = extratoService.obtemExtrato(ClienteId);
 
         return response;
+    }
+
+    @PostMapping(value="/clientes/{ClienteId}/transacoes")
+    public String transacao(@PathVariable Integer ClienteId) {        
+        return "teste";
     }
 }

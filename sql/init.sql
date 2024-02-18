@@ -19,8 +19,11 @@ DO $$
 BEGIN
         INSERT INTO clientes (limite, saldo)
         VALUES
-                (1000 * 100, 0),
-                (800 * 100, 0);
+                (100000, 0),
+                (80000, 0),
+                (1000000, 0),
+                (10000000, 0),
+                (500000, 0);
 
         INSERT INTO transacoes (cliente_id, valor, tipo, descricao, realizada_em)
         VALUES                 (1, 10, 'c', 'retirada', '2024-02-17 01:00:00'),

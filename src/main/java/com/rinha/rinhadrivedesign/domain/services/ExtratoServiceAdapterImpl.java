@@ -5,11 +5,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.rinha.rinhadrivedesign.domain.context.Transacao;
 import com.rinha.rinhadrivedesign.domain.dto.ExtratoRequest;
 import com.rinha.rinhadrivedesign.domain.dto.ExtratoResponse;
 import com.rinha.rinhadrivedesign.domain.dto.SaldoResponse;
-import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
+import com.rinha.rinhadrivedesign.domain.dto.TransacaoExtratoResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +24,10 @@ public class ExtratoServiceAdapterImpl implements ExtratoServiceAdapter {
                         request.getCliente().getLimite(), 
                         request.getCliente().getSaldo());
 
-        List<TransacaoResponse> ultimas_transacoes = 
+        List<TransacaoExtratoResponse> ultimas_transacoes = 
                 request.getUltimas_transacoes()
                 .stream()
-                .map(transacao -> new TransacaoResponse(transacao.getValor(), 
+                .map(transacao -> new TransacaoExtratoResponse(transacao.getValor(), 
                                         transacao.getTipo(), 
                                         transacao.getDescricao(), 
                                         transacao.getRealizadaEm()))

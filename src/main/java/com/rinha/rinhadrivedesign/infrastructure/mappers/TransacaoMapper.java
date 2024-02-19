@@ -10,4 +10,5 @@ import com.rinha.rinhadrivedesign.infrastructure.db.entities.TransacaoEntity;
 @Mapper(componentModel = "spring")
 public interface TransacaoMapper {
     List<Transacao> paraTransacoes(List<TransacaoEntity> transacoes);
+    Transacao paraTransacao(TransacaoEntity transacaoEntity);
 }

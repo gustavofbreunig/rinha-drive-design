@@ -1,10 +1,10 @@
-package com.rinha.rinhadrivedesign.domain.dto;
+package com.rinha.rinhadrivedesign.domain.context.extrato;
 
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record TransacaoExtratoResponse(
+public record ExtratoTransacao(
     int valor, 
     String tipo, 
     String descricao, 

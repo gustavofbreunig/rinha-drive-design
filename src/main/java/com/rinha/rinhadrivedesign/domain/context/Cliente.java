@@ -5,7 +5,6 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-@NoArgsConstructor
 public class Cliente {
     private int id;
 

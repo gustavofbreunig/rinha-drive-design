@@ -2,9 +2,12 @@ package com.rinha.rinhadrivedesign.interfaces.rest.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.rinha.rinhadrivedesign.domain.dto.ExtratoResponse;
+import com.rinha.rinhadrivedesign.domain.context.extrato.Extrato;
+import com.rinha.rinhadrivedesign.domain.dto.TransacaoRequest;
+import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
 import com.rinha.rinhadrivedesign.infrastructure.error.NotFoundException;
 import com.rinha.rinhadrivedesign.infrastructure.services.ExtratoService;
+import com.rinha.rinhadrivedesign.infrastructure.services.TransacaoService;
 
 import lombok.AllArgsConstructor;
 
@@ -13,16 +16,19 @@ import lombok.AllArgsConstructor;
 public class ClienteController {
 
     private final ExtratoService extratoService;
+    private final TransacaoService transacaoService;
 
     @GetMapping(value="/clientes/{ClienteId}/extrato")
-    public ExtratoResponse extrato(@PathVariable Integer ClienteId) throws NotFoundException{        
-        ExtratoResponse response = extratoService.obtemExtrato(ClienteId);
+    public Extrato extrato(@PathVariable Integer ClienteId) throws NotFoundException {        
+        Extrato response = extratoService.obtemExtrato(ClienteId);
 
         return response;
     }
 
     @PostMapping(value="/clientes/{ClienteId}/transacoes")
-    public String transacao(@PathVariable Integer ClienteId) {        
-        return "teste";
+    public TransacaoResponse transacao(@PathVariable Integer ClienteId, @RequestBody TransacaoRequest transacaoRequest) {        
+        TransacaoResponse response = transacaoService.registraTransacao(ClienteId, transacaoRequest);
+
+        return response;
     }
 }

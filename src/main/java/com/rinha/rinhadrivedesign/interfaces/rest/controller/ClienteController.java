@@ -6,6 +6,7 @@ import com.rinha.rinhadrivedesign.domain.context.extrato.Extrato;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoRequest;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
 import com.rinha.rinhadrivedesign.infrastructure.error.NotFoundException;
+import com.rinha.rinhadrivedesign.infrastructure.error.UnprocessableEntityException;
 import com.rinha.rinhadrivedesign.infrastructure.services.ExtratoService;
 import com.rinha.rinhadrivedesign.infrastructure.services.TransacaoService;
 
@@ -26,7 +27,7 @@ public class ClienteController {
     }
 
     @PostMapping(value="/clientes/{ClienteId}/transacoes")
-    public TransacaoResponse transacao(@PathVariable Integer ClienteId, @RequestBody TransacaoRequest transacaoRequest) {        
+    public TransacaoResponse transacao(@PathVariable Integer ClienteId, @RequestBody TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {                             
         TransacaoResponse response = transacaoService.registraTransacao(ClienteId, transacaoRequest);
 
         return response;

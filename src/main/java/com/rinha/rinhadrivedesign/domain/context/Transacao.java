@@ -2,8 +2,6 @@ package com.rinha.rinhadrivedesign.domain.context;
 
 import java.util.Date;
 
-import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
-
 import lombok.*;
 
 @Builder
@@ -13,13 +11,23 @@ import lombok.*;
 @AllArgsConstructor
 public class Transacao {
     private int id;
+    
     private Cliente cliente;
+    
     private int valor;
-    private String tipo;
+
+    private TipoTransacao tipo;
+    
     private String descricao;
+    
     private Date realizadaEm;
 
-    public static TransacaoResponse valida(Transacao transacao) {
-        return new TransacaoResponse(1, 2);
+    public Transacao(Cliente cliente, int valor, TipoTransacao tipo, String descricao)
+    {
+        this.cliente = cliente;
+        this.valor = valor;
+        this.tipo = tipo;
+        this.descricao = descricao;
+        this.realizadaEm = new Date();
     }
 }

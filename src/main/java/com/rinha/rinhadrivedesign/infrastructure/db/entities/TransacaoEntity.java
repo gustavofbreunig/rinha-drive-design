@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.rinha.rinhadrivedesign.domain.context.TipoTransacao;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,11 +20,13 @@ import lombok.*;
 public class TransacaoEntity {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)    
     private int id;   
 
     private int valor;
-    private String tipo; //TODO: trocar para enum
+
+    private TipoTransacao tipo;
+    
     private String descricao;
 
     @Column(name = "realizada_em")

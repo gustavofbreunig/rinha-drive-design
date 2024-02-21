@@ -11,4 +11,5 @@ import com.rinha.rinhadrivedesign.infrastructure.db.entities.TransacaoEntity;
 public interface TransacaoMapper {
     List<Transacao> paraTransacoes(List<TransacaoEntity> transacoes);
     Transacao paraTransacao(TransacaoEntity transacaoEntity);
+    TransacaoEntity paraTransacaoEntity(Transacao transacao);
 }

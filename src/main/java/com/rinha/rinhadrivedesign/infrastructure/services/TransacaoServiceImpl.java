@@ -1,14 +1,23 @@
 package com.rinha.rinhadrivedesign.infrastructure.services;
 
+import java.util.AbstractMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
+import com.rinha.rinhadrivedesign.domain.context.Cliente;
+import com.rinha.rinhadrivedesign.domain.context.TipoTransacao;
 import com.rinha.rinhadrivedesign.domain.context.Transacao;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoRequest;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
+import com.rinha.rinhadrivedesign.domain.error.LimiteExcedidoException;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.ClienteEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.TransacaoEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.repository.ClienteRepository;
+import com.rinha.rinhadrivedesign.infrastructure.db.repository.TransacaoRepository;
 import com.rinha.rinhadrivedesign.infrastructure.error.NotFoundException;
+import com.rinha.rinhadrivedesign.infrastructure.error.UnprocessableEntityException;
+import com.rinha.rinhadrivedesign.infrastructure.mappers.ClienteMapper;
 import com.rinha.rinhadrivedesign.infrastructure.mappers.TransacaoMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -18,33 +27,40 @@ import lombok.RequiredArgsConstructor;
 public class TransacaoServiceImpl implements TransacaoService {
 
     private final ClienteRepository clienteRepository;
+    private final TransacaoRepository transacaoRepository;
 
     private final TransacaoMapper transacaoMapper;
+    private final ClienteMapper clienteMapper;     
 
     @Override
-    public TransacaoResponse registraTransacao(int clienteId, TransacaoRequest transacaoRequest) {       
+    public TransacaoResponse registraTransacao(int clienteId, TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
         //busca informações do cliente
         ClienteEntity clienteEntity = clienteRepository.findById(clienteId).orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
-        //cria objeto de transacao
-        TransacaoEntity transacaoEntity = 
-                TransacaoEntity
-                        .builder()
-                        .cliente(clienteEntity)
-                        .descricao(transacaoRequest.descricao())
-                        .tipo(transacaoRequest.tipo())
-                        .valor(transacaoRequest.valor())
-                        .build();
+        TipoTransacao tipoTransacao = TipoTransacao.fromChar(transacaoRequest.getTipo());
 
-        //mapeia para objeto de domínio
-        Transacao transacao = transacaoMapper.paraTransacao(transacaoEntity);
+        //domain objects
+        Cliente cliente = clienteMapper.paraCliente(clienteEntity);
+        Transacao transacao;
 
-        //passa as informações necessárias para o domínio validar a transação
-        TransacaoResponse response = Transacao.valida(transacao);
+        try
+        {
+            //a lógica da transação mora no domínio
+            transacao = cliente.Movimentacao(tipoTransacao, transacaoRequest.getValor(), transacaoRequest.getDescricao());          
+        }
+        catch (LimiteExcedidoException exc) {
+            //exceção emitida pelo domínio, tratada pela infra, inserindo o HTTP code e subindo
+            throw new UnprocessableEntityException(exc.getMessage());
+        }
 
         //persiste
+        ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(cliente);
+        TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(transacao);
+        
+        clienteRepository.save(clienteEntityUpdated);
+        transacaoRepository.save(transacaoEntity);
 
-        return response;
+        return new TransacaoResponse(cliente.getLimite(), cliente.getSaldo());          
     }
     
 }

@@ -21,7 +21,7 @@ public class Extrato {
                 request.getUltimas_transacoes()
                 .stream()
                 .map(transacao -> new ExtratoTransacao(transacao.getValor(), 
-                                        transacao.getTipo(), 
+                                        transacao.getTipo().getTipo(), 
                                         transacao.getDescricao(), 
                                         transacao.getRealizadaEm()))
                 .toList();

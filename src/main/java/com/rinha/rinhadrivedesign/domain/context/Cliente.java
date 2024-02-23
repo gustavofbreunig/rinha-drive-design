@@ -27,6 +27,21 @@ public class Cliente {
 
     public Transacao Movimentacao(TipoTransacao tipo, int valor, String descricao) throws LimiteExcedidoException
     {
+        if (valor < 0)
+        {
+            throw new LimiteExcedidoException("valor < 0");
+        }
+
+        if (descricao == null || descricao.isEmpty())
+        {
+            throw new LimiteExcedidoException("isEmpty");
+        }
+
+        if (descricao.length() > 10)
+        {
+            throw new LimiteExcedidoException("lenght > 10");
+        }
+
         //faz a transação de acordo com a estratégia do tipo de transação
         tipo.efetuaTransacao(this, valor);
         return new Transacao(this, valor, tipo, descricao);            

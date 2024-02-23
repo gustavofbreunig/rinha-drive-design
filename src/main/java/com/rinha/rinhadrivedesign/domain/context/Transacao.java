@@ -23,7 +23,7 @@ public class Transacao {
     private Date realizadaEm;
 
     public Transacao(Cliente cliente, int valor, TipoTransacao tipo, String descricao)
-    {
+    {       
         this.cliente = cliente;
         this.valor = valor;
         this.tipo = tipo;

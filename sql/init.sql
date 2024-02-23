@@ -15,19 +15,25 @@ CREATE UNLOGGED TABLE transacoes (
                 FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
 
+CREATE INDEX ix_transacao_idcliente ON transacoes
+(
+    cliente_id ASC
+);
+
 DO $$
 BEGIN
         INSERT INTO clientes (limite, saldo)
         VALUES
                 (100000, 0),
-                (80000, 10),
+                (80000, 0),
                 (1000000, 0),
                 (10000000, 0),
                 (500000, 0);
 
+/*
         INSERT INTO transacoes (cliente_id, valor, tipo, descricao, realizada_em)
         VALUES                 (1, 10, 'c', 'retirada', '2024-02-17 01:00:00'),
-                               (2, 10, 'd', 'add     ', '2024-02-17 02:00:00'),
+                              (2, 10, 'd', 'add     ', '2024-02-17 02:00:00'),
                                (1, 10, 'c', 'retirada', '2024-02-17 03:00:00'),
                                (1, 10, 'c', 'retirada', '2024-02-17 04:00:00'),
                                (1, 10, 'c', 'retirada', '2024-02-17 05:00:00'),
@@ -39,6 +45,7 @@ BEGIN
                                (1, 10, 'c', 'retirada', '2024-02-19 09:00:00'),
                                (1, 10, 'c', 'desc234', '2024-02-19 09:00:00'),
                                (1, 110, 'd', 'debitado', '2024-02-17 10:05:00');
+*/
 
 END;
 $$;

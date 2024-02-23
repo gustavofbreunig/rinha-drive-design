@@ -3,7 +3,8 @@ package com.rinha.rinhadrivedesign.domain.context.extrato;
 import java.util.Date;
 import java.util.List;
 
-import com.rinha.rinhadrivedesign.domain.dto.ExtratoRequest;
+import com.rinha.rinhadrivedesign.domain.context.Cliente;
+import com.rinha.rinhadrivedesign.domain.context.Transacao;
 
 import lombok.*;
 
@@ -14,11 +15,11 @@ public class Extrato {
     private Saldo saldo;
     private List<ExtratoTransacao> ultimas_transacoes;
 
-    public static Extrato montaExtrato(ExtratoRequest request) {
+    public static Extrato montaExtrato(Cliente cliente, List<Transacao> ultimas_transacoes) {
 
         Extrato extrato = new Extrato();
         extrato.ultimas_transacoes = 
-                request.getUltimas_transacoes()
+                ultimas_transacoes
                 .stream()
                 .map(transacao -> new ExtratoTransacao(transacao.getValor(), 
                                         transacao.getTipo().getTipo(), 
@@ -26,7 +27,7 @@ public class Extrato {
                                         transacao.getRealizadaEm()))
                 .toList();
 
-        extrato.saldo = new Saldo(request.getCliente().getSaldo(), new Date(), request.getCliente().getLimite());
+        extrato.saldo = new Saldo(cliente.getSaldo(), new Date(), cliente.getLimite());
         return extrato;
     }
 }

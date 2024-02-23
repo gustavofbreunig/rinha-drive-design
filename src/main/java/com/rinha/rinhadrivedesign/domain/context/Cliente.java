@@ -4,9 +4,9 @@ import com.rinha.rinhadrivedesign.domain.error.LimiteExcedidoException;
 
 import lombok.*;
 
-@Setter
-@Getter
 @ToString
+@Getter
+@Setter
 public class Cliente {
     private int id;
 
@@ -14,18 +14,18 @@ public class Cliente {
 
     private int limite;
 
-    public void deposito(int valor) {
+    protected void deposito(int valor) {
         this.saldo += valor;
     }
 
-    public void retirada(int valor) throws LimiteExcedidoException {
+    protected void retirada(int valor) throws LimiteExcedidoException {
         this.saldo -= valor;
         if (this.saldo < (this.limite * -1)) {
             throw new LimiteExcedidoException("Limite excedido");
         }           
     }
 
-    public Transacao Movimentacao(TipoTransacao tipo, int valor, String descricao) throws LimiteExcedidoException
+    public Transacao efetuaTransacao(TipoTransacao tipo, int valor, String descricao) throws LimiteExcedidoException
     {
         if (valor < 0)
         {

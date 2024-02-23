@@ -5,8 +5,8 @@ import java.util.Date;
 import lombok.*;
 
 @Builder
-@Setter
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
 public class Transacao {

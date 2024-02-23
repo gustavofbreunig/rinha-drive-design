@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.rinha.rinhadrivedesign.domain.context.Cliente;
 import com.rinha.rinhadrivedesign.domain.context.Transacao;
 import com.rinha.rinhadrivedesign.domain.context.extrato.Extrato;
-import com.rinha.rinhadrivedesign.domain.dto.ExtratoRequest;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.ClienteEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.TransacaoEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.repository.ClienteRepository;
@@ -43,13 +42,8 @@ public class ExtratoServiceImpl implements ExtratoService  {
         
         Cliente cliente = clienteMapper.paraCliente(clienteEntity);
 
-        ExtratoRequest request = ExtratoRequest.builder()
-                .cliente(cliente)
-                .ultimas_transacoes(transacoes)
-                .build();
-
         //monta a estrutura no domínio
-        Extrato response = Extrato.montaExtrato(request);
+        Extrato response = Extrato.montaExtrato(cliente, transacoes);
         return response;
     }
     

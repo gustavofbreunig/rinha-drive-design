@@ -33,7 +33,7 @@ public class TransacaoServiceImpl implements TransacaoService {
     private final ClienteMapper clienteMapper;     
 
     @Override
-    public TransacaoResponse registraTransacao(int clienteId, TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
+    public TransacaoResponse efetuaTransacao(int clienteId, TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
         //busca informações do cliente
         ClienteEntity clienteEntity = clienteRepository.findById(clienteId).orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
@@ -45,8 +45,8 @@ public class TransacaoServiceImpl implements TransacaoService {
 
         try
         {
-            //a lógica da transação mora no domínio
-            transacao = cliente.Movimentacao(tipoTransacao, transacaoRequest.getValor(), transacaoRequest.getDescricao());          
+            //a lógica da transação mora no domínio, o erro é capturado na infraestrutura e traduzido para as regras HTTP            
+            transacao = cliente.efetuaTransacao(tipoTransacao, transacaoRequest.getValor(), transacaoRequest.getDescricao());          
         }
         catch (LimiteExcedidoException exc) {
             //exceção emitida pelo domínio, tratada pela infra, inserindo o HTTP code e subindo
@@ -54,11 +54,19 @@ public class TransacaoServiceImpl implements TransacaoService {
         }
 
         //persiste
-        ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(cliente);
-        TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(transacao);
+        ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(cliente);        
         
-        clienteRepository.save(clienteEntityUpdated);
-        transacaoRepository.save(transacaoEntity);
+        if (clienteEntityUpdated != null)
+        {
+            clienteRepository.save(clienteEntityUpdated);
+        }
+        
+        TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(transacao);
+
+        if (transacaoEntity != null) 
+        {
+            transacaoRepository.save(transacaoEntity);
+        }
 
         return new TransacaoResponse(cliente.getLimite(), cliente.getSaldo());          
     }

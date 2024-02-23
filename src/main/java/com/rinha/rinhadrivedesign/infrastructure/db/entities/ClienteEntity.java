@@ -1,6 +1,5 @@
 package com.rinha.rinhadrivedesign.infrastructure.db.entities;
 
-import java.util.List;
 
 import org.hibernate.annotations.DynamicUpdate;
 

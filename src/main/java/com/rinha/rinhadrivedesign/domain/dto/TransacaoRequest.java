@@ -6,7 +6,8 @@ import lombok.*;
 @Getter
 @ToString
 public class TransacaoRequest {
-    private int valor;
+    private int clienteId;
+    private String valor;
     private String tipo;
     private String descricao;
 }

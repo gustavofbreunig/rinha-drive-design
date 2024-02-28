@@ -1,16 +1,17 @@
 package com.rinha.rinhadrivedesign.infrastructure.services;
 
-import java.util.AbstractMap;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rinha.rinhadrivedesign.domain.context.Cliente;
-import com.rinha.rinhadrivedesign.domain.context.TipoTransacao;
 import com.rinha.rinhadrivedesign.domain.context.Transacao;
+import com.rinha.rinhadrivedesign.domain.dto.TransacaoCriada;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoRequest;
 import com.rinha.rinhadrivedesign.domain.dto.TransacaoResponse;
-import com.rinha.rinhadrivedesign.domain.error.LimiteExcedidoException;
+import com.rinha.rinhadrivedesign.domain.errors.TipoTransacaoInvalido;
+import com.rinha.rinhadrivedesign.domain.errors.TransacaoInvalida;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.ClienteEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.entities.TransacaoEntity;
 import com.rinha.rinhadrivedesign.infrastructure.db.repository.ClienteRepository;
@@ -33,42 +34,48 @@ public class TransacaoServiceImpl implements TransacaoService {
     private final ClienteMapper clienteMapper;     
 
     @Override
-    public TransacaoResponse efetuaTransacao(int clienteId, TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
+    public TransacaoResponse efetuaTransacao(TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
         //busca informações do cliente
-        ClienteEntity clienteEntity = clienteRepository.findById(clienteId).orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
-
-        TipoTransacao tipoTransacao = TipoTransacao.fromChar(transacaoRequest.getTipo());
+        ClienteEntity clienteEntity = clienteRepository
+                                            .findById(transacaoRequest.getClienteId())
+                                            .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
         //domain objects
-        Cliente cliente = clienteMapper.paraCliente(clienteEntity);
-        Transacao transacao;
+        Cliente cliente = clienteMapper.paraCliente(clienteEntity);        
+
+        //a lógica da transação mora no domínio, o erro é capturado na infraestrutura e traduzido para as regras HTTP
 
         try
         {
-            //a lógica da transação mora no domínio, o erro é capturado na infraestrutura e traduzido para as regras HTTP            
-            transacao = cliente.efetuaTransacao(tipoTransacao, transacaoRequest.getValor(), transacaoRequest.getDescricao());          
+            TransacaoCriada novaTransacao = Transacao.efetuaTransacao(cliente, transacaoRequest.getTipo(), transacaoRequest.getValor(), transacaoRequest.getDescricao());
+            TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(novaTransacao.getTransacao());
+            ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(novaTransacao.getCliente());
+
+            if (transacaoEntity != null) 
+            {
+                transacaoRepository.save(transacaoEntity);
+            }
+
+            if (clienteEntityUpdated != null)
+            {
+                clienteRepository.save(clienteEntityUpdated);
+            }
+
+            return new TransacaoResponse(novaTransacao.getCliente().getLimite(), novaTransacao.getCliente().getSaldo());  
         }
-        catch (LimiteExcedidoException exc) {
+        catch (TransacaoInvalida exc) {
             //exceção emitida pelo domínio, tratada pela infra, inserindo o HTTP code e subindo
             throw new UnprocessableEntityException(exc.getMessage());
         }
-
-        //persiste
-        ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(cliente);        
-        
-        if (clienteEntityUpdated != null)
+        catch (TipoTransacaoInvalido exc)
         {
-            clienteRepository.save(clienteEntityUpdated);
+            throw new UnprocessableEntityException(exc.getMessage());
         }
-        
-        TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(transacao);
-
-        if (transacaoEntity != null) 
+        catch (NumberFormatException exc) 
         {
-            transacaoRepository.save(transacaoEntity);
-        }
-
-        return new TransacaoResponse(cliente.getLimite(), cliente.getSaldo());          
+            throw new UnprocessableEntityException(exc.getMessage());
+        }                        
     }
     
 }

@@ -27,8 +27,9 @@ public class ClienteController {
     }
 
     @PostMapping(value="/clientes/{ClienteId}/transacoes")
-    public TransacaoResponse transacao(@PathVariable Integer ClienteId, @RequestBody TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {                             
-        TransacaoResponse response = transacaoService.efetuaTransacao(ClienteId, transacaoRequest);
+    public TransacaoResponse transacao(@PathVariable Integer ClienteId, @RequestBody TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {
+        transacaoRequest.setClienteId(ClienteId);                     
+        TransacaoResponse response = transacaoService.efetuaTransacao(transacaoRequest);
 
         return response;
     }

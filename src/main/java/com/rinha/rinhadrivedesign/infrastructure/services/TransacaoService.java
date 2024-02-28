@@ -6,5 +6,5 @@ import com.rinha.rinhadrivedesign.infrastructure.error.NotFoundException;
 import com.rinha.rinhadrivedesign.infrastructure.error.UnprocessableEntityException;
 
 public interface TransacaoService {
-    TransacaoResponse efetuaTransacao(int clienteId, TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException;
+    TransacaoResponse efetuaTransacao(TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException;
 }

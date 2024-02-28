@@ -12,12 +12,12 @@ services:
       - "5432:5432"
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: postgres -c max_connections=300 -c shared_buffers=96MB -c checkpoint_timeout=600 -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c work_mem=16MB
+    #command: postgres -c max_connections=300 -c shared_buffers=96MB -c checkpoint_timeout=600 -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c work_mem=16MB
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: "1GB"
+          cpus: "0.25"
+          memory: "125MB"
     healthcheck:
       test: ["CMD", "pg_isready", "--database", "clientes", "--username", "admin"]
       interval: 15s
@@ -25,6 +25,48 @@ services:
       retries: 10
       start_period: 15s
       start_interval: 1s
+
+  api_1:
+    container_name: api_1
+    image: gustavofbreunig/ddd-rinha-2023-q1:latest
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"      
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "200MB"
+
+  api_2:
+    container_name: api_1
+    image: gustavofbreunig/ddd-rinha-2023-q1:latest
+    depends_on:
+      - db
+    ports:
+      - "8082:8080"        
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "200MB"
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api_1
+      - api_2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "25MB"          
 
 networks:
   default:

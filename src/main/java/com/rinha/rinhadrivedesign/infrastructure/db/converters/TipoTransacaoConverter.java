@@ -1,6 +1,9 @@
 package com.rinha.rinhadrivedesign.infrastructure.db.converters;
 
+import org.hibernate.MappingException;
+
 import com.rinha.rinhadrivedesign.domain.context.TipoTransacao;
+import com.rinha.rinhadrivedesign.domain.errors.TipoTransacaoInvalido;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -15,7 +18,11 @@ public class TipoTransacaoConverter implements AttributeConverter<TipoTransacao,
 
     @Override
     public TipoTransacao convertToEntityAttribute(String dbData) {
-        return TipoTransacao.fromChar(dbData);
+        try {
+            return TipoTransacao.fromString(dbData);
+        } catch (TipoTransacaoInvalido e) {
+            throw new MappingException(dbData);
+        }
     }
     
 }

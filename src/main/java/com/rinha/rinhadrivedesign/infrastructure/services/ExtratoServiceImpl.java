@@ -3,6 +3,9 @@ package com.rinha.rinhadrivedesign.infrastructure.services;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rinha.rinhadrivedesign.domain.context.Cliente;
 import com.rinha.rinhadrivedesign.domain.context.Transacao;
@@ -28,22 +31,24 @@ public class ExtratoServiceImpl implements ExtratoService  {
     private final TransacaoMapper transacaoMapper;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED) 
     public Extrato obtemExtrato(int ClienteId) throws NotFoundException {
         //busca o cliente no bd
-        ClienteEntity clienteEntity = clienteRepository.findById(ClienteId)
+        ClienteEntity clienteEntity = clienteRepository
+                .findById(ClienteId)
                 .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
         //busca transacoes
         List<TransacaoEntity> transacoesEntity = 
-                transacaoRepository.findFirst10ByClienteOrderByRealizadaEmDesc(clienteEntity);
+                transacaoRepository.findFirst10ByClienteOrderByRealizadaEmDesc(clienteEntity);        
 
         //objetos de domínio
         List<Transacao> transacoes = transacaoMapper.paraTransacoes(transacoesEntity);
-        
-        Cliente cliente = clienteMapper.paraCliente(clienteEntity);
 
         //monta a estrutura no domínio
+        Cliente cliente = clienteMapper.paraCliente(clienteEntity);
         Extrato response = Extrato.montaExtrato(cliente, transacoes);
+        
         return response;
     }
     

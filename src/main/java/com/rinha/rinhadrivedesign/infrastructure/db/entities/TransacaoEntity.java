@@ -1,6 +1,6 @@
 package com.rinha.rinhadrivedesign.infrastructure.db.entities;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -30,9 +30,9 @@ public class TransacaoEntity {
     private String descricao;
 
     @Column(name = "realizada_em")
-    private Date realizadaEm;
+    private Instant realizadaEm;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ClienteEntity cliente;
 
     public TransacaoEntity(int id) {

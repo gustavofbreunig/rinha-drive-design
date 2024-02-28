@@ -1,20 +1,12 @@
 package com.rinha.rinhadrivedesign.domain.context;
 
-import com.rinha.rinhadrivedesign.domain.error.LimiteExcedidoException;
+import java.util.Set;
+
+import com.rinha.rinhadrivedesign.domain.errors.TipoTransacaoInvalido;
 
 public enum TipoTransacao {
-    Credito("c") {
-        @Override
-        public void efetuaTransacao(Cliente cliente, int valor) {
-             cliente.deposito(valor);  
-        }
-    }, 
-    Debito("d") {
-        @Override
-        public void efetuaTransacao(Cliente cliente, int valor) throws LimiteExcedidoException {
-            cliente.retirada(valor);
-        }
-    };
+    Credito("c"), 
+    Debito("d");
 
     private String tipo;
 
@@ -26,16 +18,26 @@ public enum TipoTransacao {
         this.tipo = tipo;
     }
 
-    public abstract void efetuaTransacao(Cliente cliente, int valor) throws LimiteExcedidoException;
+    public static void valida(String tipo) {
+        if (Set.of(TipoTransacao.values()).stream().filter(t -> t.getTipo().equals(tipo)).count() == 0) {
+            throw new TipoTransacaoInvalido("Tipo de transacao \"%s\" nao encontrado".formatted(tipo));
+        }
+    }
 
-    public static TipoTransacao fromChar(String tipoChar) {
-        for (TipoTransacao tipo : TipoTransacao.values()) {
-            if (tipo.getTipo().equals(tipoChar)) {
-                return tipo;
+    public static TipoTransacao fromString(String tipo) throws TipoTransacaoInvalido {
+        //conversor de tipo de transação String para um tipo concreto
+        //validação para jamais estar em um tipo inválido
+
+        TipoTransacao.valida(tipo);
+        
+        for (TipoTransacao tipoConcreto : TipoTransacao.values()) {
+            if (tipoConcreto.getTipo().equals(tipo)) {
+                return tipoConcreto;
             }
         }
 
-        throw new RuntimeException("Tipo de transacao \"%s\" nao encontrado".formatted(tipoChar));
+        //nunca entra
+        return null;
     }
 
 }

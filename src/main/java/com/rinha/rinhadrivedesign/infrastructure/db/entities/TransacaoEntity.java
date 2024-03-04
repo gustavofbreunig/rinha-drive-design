@@ -32,7 +32,7 @@ public class TransacaoEntity {
     @Column(name = "realizada_em")
     private Instant realizadaEm;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private ClienteEntity cliente;
 
     public TransacaoEntity(int id) {

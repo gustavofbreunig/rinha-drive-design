@@ -1,7 +1,12 @@
 package com.rinha.rinhadrivedesign.domain.context.extrato;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record Saldo(int total, @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ") Date data_extrato, int limite) {};
+public record Saldo(
+    int total, 
+    @JsonFormat(shape = JsonFormat.Shape.STRING) 
+    Instant data_extrato, 
+    int limite) 
+    {};

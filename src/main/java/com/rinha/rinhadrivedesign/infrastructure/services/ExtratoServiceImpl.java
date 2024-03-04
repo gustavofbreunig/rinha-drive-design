@@ -31,7 +31,7 @@ public class ExtratoServiceImpl implements ExtratoService  {
     private final TransacaoMapper transacaoMapper;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED) 
+    @Transactional(isolation = Isolation.READ_COMMITTED) 
     public Extrato obtemExtrato(int ClienteId) throws NotFoundException {
         //busca o cliente no bd
         ClienteEntity clienteEntity = clienteRepository

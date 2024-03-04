@@ -2,7 +2,7 @@
 
 todo
 connection pool
-indexes
+
 
 curl teste GET
 curl -v -X GET http://localhost:8080/clientes/1/extrato

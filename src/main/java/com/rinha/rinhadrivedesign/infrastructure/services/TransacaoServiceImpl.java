@@ -34,7 +34,7 @@ public class TransacaoServiceImpl implements TransacaoService {
     private final ClienteMapper clienteMapper;     
 
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)    
     public TransacaoResponse efetuaTransacao(TransacaoRequest transacaoRequest) throws NotFoundException, UnprocessableEntityException {       
         //busca informações do cliente
         ClienteEntity clienteEntity = clienteRepository
@@ -75,7 +75,7 @@ public class TransacaoServiceImpl implements TransacaoService {
         catch (NumberFormatException exc) 
         {
             throw new UnprocessableEntityException(exc.getMessage());
-        }                        
+        }
     }
     
 }

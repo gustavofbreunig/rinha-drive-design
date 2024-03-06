@@ -5,8 +5,8 @@ import java.util.Set;
 import com.rinha.rinhadrivedesign.domain.errors.TipoTransacaoInvalido;
 
 public enum TipoTransacao {
-    Credito("c"), 
-    Debito("d");
+    Credito("c", new DepositoStrategy()),
+    Debito("d", new RetiradaStrategy());
 
     private String tipo;
 
@@ -14,8 +14,15 @@ public enum TipoTransacao {
         return this.tipo;
     }
 
-    private TipoTransacao(String tipo) {
+    private TransacaoStrategy transacaoStrategy;
+
+    public TransacaoStrategy getTransacaoStrategy() {
+        return this.transacaoStrategy;
+    }
+
+    private TipoTransacao(String tipo, TransacaoStrategy strategy) {
         this.tipo = tipo;
+        this.transacaoStrategy = strategy;
     }
 
     public static void valida(String tipo) {
@@ -36,8 +43,7 @@ public enum TipoTransacao {
             }
         }
 
-        //nunca entra
-        return null;
+        throw new TipoTransacaoInvalido("tipo nao informado");
     }
 
 }

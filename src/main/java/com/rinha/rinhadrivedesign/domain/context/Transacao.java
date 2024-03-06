@@ -34,7 +34,6 @@ public class Transacao {
         this.realizadaEm = Instant.now();
     }
 
-
     private static TransacaoCriada efetuaTransacao(Cliente cliente, TipoTransacao tipo, int valor, String descricao) 
     {
         //faz uma nova transação de crédito ou débito
@@ -43,12 +42,7 @@ public class Transacao {
         //retorna o dto com a transação criada e o cliente com o novo saldo
         validaTransacao(cliente, tipo, valor, descricao);
 
-        if (tipo.equals(TipoTransacao.Credito))
-        {
-            cliente.deposito(valor);
-        } else {
-            cliente.retirada(valor);
-        }
+        tipo.getTransacaoStrategy().efetuaTransacao(cliente, valor);
 
         return TransacaoCriada
                     .builder()

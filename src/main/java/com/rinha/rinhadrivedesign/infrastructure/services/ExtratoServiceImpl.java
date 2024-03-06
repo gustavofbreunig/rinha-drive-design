@@ -44,6 +44,11 @@ public class ExtratoServiceImpl implements ExtratoService  {
         //objetos de domínio
         List<Transacao> transacoes = transacaoMapper.paraTransacoes(transacoesEntity);
 
+        //para evitar problemas de concorrência, busco o cliente da mesma query que trouxe as transacoes
+        //if (transacoes.size() > 0) {
+        //    clienteEntity = transacoesEntity.get(0).getCliente();
+        //}
+
         //monta a estrutura no domínio
         Cliente cliente = clienteMapper.paraCliente(clienteEntity);
         Extrato response = Extrato.montaExtrato(cliente, transacoes);

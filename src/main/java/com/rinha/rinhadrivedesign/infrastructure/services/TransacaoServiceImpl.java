@@ -42,27 +42,13 @@ public class TransacaoServiceImpl implements TransacaoService {
                                             .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
         //domain objects
-        Cliente cliente = clienteMapper.paraCliente(clienteEntity);        
+        Cliente cliente = clienteMapper.paraCliente(clienteEntity);
+        TransacaoCriada novaTransacao;
 
         //a lógica da transação mora no domínio, o erro é capturado na infraestrutura e traduzido para as regras HTTP
-
         try
         {
-            TransacaoCriada novaTransacao = Transacao.efetuaTransacao(cliente, transacaoRequest.getTipo(), transacaoRequest.getValor(), transacaoRequest.getDescricao());
-            TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(novaTransacao.getTransacao());
-            ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(novaTransacao.getCliente());
-
-            if (transacaoEntity != null) 
-            {
-                transacaoRepository.save(transacaoEntity);
-            }
-
-            if (clienteEntityUpdated != null)
-            {
-                clienteRepository.save(clienteEntityUpdated);
-            }
-
-            return new TransacaoResponse(novaTransacao.getCliente().getLimite(), novaTransacao.getCliente().getSaldo());  
+            novaTransacao = Transacao.efetuaTransacao(cliente, transacaoRequest.getTipo(), transacaoRequest.getValor(), transacaoRequest.getDescricao());
         }
         catch (TransacaoInvalida exc) {
             //exceção emitida pelo domínio, tratada pela infra, inserindo o HTTP code e subindo
@@ -76,6 +62,30 @@ public class TransacaoServiceImpl implements TransacaoService {
         {
             throw new UnprocessableEntityException(exc.getMessage());
         }
+
+        if (novaTransacao == null)
+        {
+            throw new RuntimeException("novaTransacao is null");
+        }
+
+        TransacaoEntity transacaoEntity = transacaoMapper.paraTransacaoEntity(novaTransacao.getTransacao());
+        ClienteEntity clienteEntityUpdated = clienteMapper.paraClienteEntity(novaTransacao.getCliente());
+
+        if (transacaoEntity == null)
+        {
+            throw new RuntimeException("transacaoEntity is null");
+        }
+
+        if (clienteEntityUpdated == null)
+        {
+            throw new RuntimeException("clienteEntityUpdated is null");
+        }   
+
+        transacaoRepository.save(transacaoEntity);
+        clienteRepository.save(clienteEntityUpdated);
+
+        return new TransacaoResponse(novaTransacao.getCliente().getLimite(), novaTransacao.getCliente().getSaldo());          
+
     }
     
 }
